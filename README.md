@@ -1,41 +1,99 @@
-# Spam-Comment-Detector
-A Machine Learning Application that when you provide a comment and in return it predicts you whether it is spam or not.
-This will going to be a full fledge application that will has a proper front and back end. 
+# Spam Comment Detector
 
-## The Application Working
-The appplication works as when user enters a comment in a HTML form, which is the ```index.html``` file, then that text captured by the "POST" method goes to the backend Python application based on 
-Flask. Then there is Machine Learning model that is trained over to make prediction or more specifically to classify whether the entered comment or say text is 
-spam or not spam (Ham). Now when everthing is completed and the model predicts it, then by the "GET" method the Flask application sends that prediction to the HTML form 
-which is shown in the ```show.html``` file.\
-The Ham word I first read in the book "Thoughtful Machine Learning with Python: A Test-Driven Approach" by Matthew Kirk in O'REILLY Series, while 
-reading the Naive Bayes Classification chapter.
+A complete Machine Learning web application designed to classify comments as **Spam** or **Not Spam (Ham)**. It uses a custom-trained Natural Language Processing (NLP) model to analyze comment text, and provides an intuitive web interface for predictions. 
 
-## The Model
-The machine learning model working under the hood is the Nive Bayes Classifier which does really well in doing prediction about the spam classification.
-The Naive Bayes Classifiers is supervised learning algorithms that are base on the Bayes Theorem. And these algorithms did really well on the data where every 
-data point or say featrues are independent of each other. Some of the Naive Bayes Classifiers are:
+## 🚀 Features
 
--	#### Multinomial Naive Bayes: 
-The one which we used in this project. And this classifier is typically used for the document classification.
--	#### Bernoulli Naive Bayes:
-This is used for binary classification in documents like a word occured or not in this document.
--	#### Gaussian Naive Bayes: 
-This one is based on the conitinous distribution.
+- **Single Comment Analysis**: Manually type or paste a comment to get a real-time spam prediction with confidence scores.
+- **YouTube Video Scraping**: Provide a YouTube video URL, and the application will automatically scrape up to 200 comments from the video and classify them in bulk.
+- **Bulk Pasted Comments**: Paste multiple comments (one per line) to analyze them all at once.
+- **Custom Trained Model**: Uses a Multinomial Naive Bayes classifier trained on a dataset of real YouTube comments.
+- **Responsive Web Interface**: Built with Flask and beautifully styled with HTML/CSS.
 
-## The Data:
-The data used in this project is taken from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/YouTube+Spam+Collection#:~:text=UCI%20Machine%20Learning%20Repository%3A%20YouTube%20Spam%20Collection%20Data%20Set&text=Abstract%3A%20It%20is%20a%20public,viewed%20on%20the%20collection%20period.).
-It does contain 5 datasets from different artits' vidoes. The after analyzing all the datasets it 
-we only come up with missing values in the ```Youtube04-Eminem.csv``` dataset, which was not that 
-much important like it was in dates. And for this project we don't need to mess up with the dates. 
-Then all the five datasets are concatenated into one. And then assign keys to everyone so that if 
-we need to inspect specific, it would be easy for us to do so. And so finally we considered taking 
-the data under ```CONTENT``` and ```CLASS``` columns. 
+## 🛠️ Technology Stack
 
-## The Code Flow
-After describing the data into a single dataframe then extract the features from the comments into 
-vector for our model. So we converted through vectorization our contents or say comments into crunching 
-numbers so that it is awesome for our model.\
-Then split the data into training and testing sets, 33% given to the testing. Then traing the 
-classifier over the 66% of the data and yooooo we get 91.95% of total accuracy over testing sets.\
-For the future prediction we've to use that pipelining as to first convert the text via the 
-```CountVectorizer``` so that our model gets the same shaped data by which it is trained. 
+- **Backend**: Python, Flask
+- **Machine Learning**: scikit-learn (Multinomial Naive Bayes, TF-IDF Vectorization)
+- **Data Manipulation**: pandas, numpy
+- **Web Scraping**: Custom script using `requests` and Python `re` module (No API key required)
+- **Frontend**: HTML5, CSS3, Jinja2 Templates
+
+## 📂 Project Structure
+
+```text
+Spam-Comment-Detector/
+│
+├── app.py               # Main Flask application
+├── scraper.py           # Custom YouTube comment scraper
+├── train.py             # Script to train the ML model
+├── requirements.txt     # Python dependencies
+├── README.md            # Project documentation
+│
+├── data/                # UCI YouTube Spam Collection CSV files
+│   ├── Youtube01-Psy.csv
+│   ├── Youtube02-KatyPerry.csv
+│   └── ...
+│
+├── models/              # Serialized ML models (Generated after training)
+│   ├── spam_classifier.pkl
+│   └── tfidf_vectorizer.pkl
+│
+├── static/              # CSS files and static assets
+│   └── style.css
+│
+└── templates/           # HTML templates for the Flask app
+    ├── index.html       # Input form page
+    └── results.html     # Prediction results page
+```
+
+## 📊 The Model & Data
+
+### The Model
+The machine learning model working under the hood is a **Multinomial Naive Bayes Classifier**. This algorithm is highly effective for document classification and text analysis. By using a `TfidfVectorizer`, the raw text comments are transformed into numerical feature vectors that the Naive Bayes model can accurately process, allowing it to predict whether the text pattern resembles historical spam.
+
+### The Data
+The model is trained on the [YouTube Spam Collection Data Set](https://archive.ics.uci.edu/ml/datasets/YouTube+Spam+Collection) from the UCI Machine Learning Repository. This dataset consists of real comments from five highly popular YouTube videos (by artists like Eminem, Katy Perry, LMFAO, Psy, and Shakira). 
+
+## ⚙️ Setup & Installation
+
+Follow these steps to set up the project locally.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/Spam-Comment-Detector.git
+cd Spam-Comment-Detector
+```
+
+### 2. Create a Virtual Environment (Recommended)
+```bash
+python -m venv venv
+```
+Activate the virtual environment:
+- **Windows**: `venv\Scripts\activate`
+- **Mac/Linux**: `source venv/bin/activate`
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Train the Model
+The serialized model files are necessary for the app to run. Generate them by running the training script:
+```bash
+python train.py
+```
+*This will process the datasets in the `data/` folder and generate `spam_classifier.pkl` and `tfidf_vectorizer.pkl` inside the `models/` directory.*
+
+## 💻 Usage
+
+To start the web application, simply run:
+
+```bash
+python app.py
+```
+
+The application will launch on your local server, typically at `http://127.0.0.1:5000/`.
+
+- Open this URL in your web browser.
+- Select your preferred mode: **Detect Single Comment**, **Scrape Video**, or **Paste Comments**.
+- Input the text or the YouTube URL and click **Analyze**.

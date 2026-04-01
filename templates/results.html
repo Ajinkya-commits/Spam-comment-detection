@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - Spam Comment Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <h1>Spam Comment Detector</h1>
+            </div>
+            <a href="/" class="back-link">← Back to Home</a>
+        </header>
+
+        {% if mode == 'single' %}
+        <!-- ==================== SINGLE COMMENT RESULT ==================== -->
+        <section class="result-card {{ 'spam' if result.is_spam else 'ham' }}">
+            <div class="result-badge {{ 'badge-spam' if result.is_spam else 'badge-ham' }}">
+                <span class="badge-icon">{{ '🚫' if result.is_spam else '✅' }}</span>
+                <span class="badge-text">{{ result.label }}</span>
+            </div>
+
+            <div class="result-details">
+                <div class="result-comment">
+                    <h3>Analyzed Comment:</h3>
+                    <blockquote>{{ comment }}</blockquote>
+                </div>
+
+                <div class="confidence-bar-container">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span class="confidence-value">{{ "%.1f"|format(result.confidence) }}%</span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill {{ 'fill-spam' if result.is_spam else 'fill-ham' }}"
+                             style="width: {{ result.confidence }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Try Another -->
+        <div class="try-again">
+            <a href="/" class="btn btn-primary" id="try-again-btn">🔍 Check Another Comment</a>
+        </div>
+
+        {% elif mode == 'scrape' %}
+        <!-- ==================== SCRAPE RESULTS ==================== -->
+
+        <!-- Stats Bar -->
+        <section class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.total }}</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-item stat-spam">
+                <span class="stat-number">{{ stats.spam }}</span>
+                <span class="stat-label">Spam</span>
+            </div>
+            <div class="stat-item stat-ham">
+                <span class="stat-number">{{ stats.ham }}</span>
+                <span class="stat-label">Legitimate</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.spam_pct }}%</span>
+                <span class="stat-label">Spam Rate</span>
+            </div>
+        </section>
+
+        <!-- Filter Buttons -->
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterComments('all')" id="filter-all">All</button>
+            <button class="filter-btn" onclick="filterComments('spam')" id="filter-spam">🚫 Spam Only</button>
+            <button class="filter-btn" onclick="filterComments('ham')" id="filter-ham">✅ Legitimate Only</button>
+        </div>
+
+        <!-- Comments Table -->
+        <section class="comments-table-wrapper">
+            <table class="comments-table" id="comments-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Author</th>
+                        <th>Comment</th>
+                        <th>Verdict</th>
+                        <th>Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in results %}
+                    <tr class="comment-row {{ 'row-spam' if item.is_spam else 'row-ham' }}"
+                        data-type="{{ 'spam' if item.is_spam else 'ham' }}">
+                        <td class="col-num">{{ loop.index }}</td>
+                        <td class="col-author">{{ item.author }}</td>
+                        <td class="col-text">{{ item.text[:200] }}{{ '...' if item.text|length > 200 else '' }}</td>
+                        <td class="col-verdict">
+                            <span class="verdict-tag {{ 'tag-spam' if item.is_spam else 'tag-ham' }}">
+                                {{ item.label }}
+                            </span>
+                        </td>
+                        <td class="col-confidence">{{ "%.1f"|format(item.confidence) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Try Another -->
+        <div class="try-again">
+            <a href="/" class="btn btn-secondary" id="scan-another-btn">📺 Scan Another Video</a>
+        </div>
+
+        {% endif %}
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with Flask • scikit-learn • TF-IDF + Multinomial Naive Bayes</p>
+        </footer>
+    </div>
+
+    <script>
+        function filterComments(type) {
+            const rows = document.querySelectorAll('.comment-row');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            rows.forEach(row => {
+                if (type === 'all' || row.dataset.type === type) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
